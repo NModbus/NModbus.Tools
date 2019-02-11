@@ -1,0 +1,67 @@
+﻿<Window x:Class="NModbus.Tools.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+        mc:Ignorable="d"
+        Title="NModbus Tools" Height="500" Width="800" Icon="/NModbus.Tools;component/Images/Toolbox_16x.png">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <Menu>
+          
+            <MenuItem Header="_File">
+                <MenuItem Header="_New">
+                    <MenuItem Header="Slave Explorer" x:Name="MenuItemNewSlaveExplorer" Click="MenuItemNewSlaveExplorer_Click" />
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="E_xit" x:Name="ExitMenuItem" Click="ExitMenuItem_OnClick"/>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_About"/>
+            </MenuItem>
+        </Menu>
+
+        <!--<ToolBar Grid.Row="1">
+            <Button x:Name="ToolbarInsertButton" Click="ToolbarInsertButton_Click" Header="Add new Slave Explorer...">
+                <Image Source="/NModbus.Tools;component/Images/Insert.png" Width="16"  />
+            </Button>
+        </ToolBar>-->
+
+        <xcad:DockingManager Grid.Row="2" >
+
+            <xcad:DockingManager.DocumentHeaderTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Path=Content.DataContext.Title}"/>
+                </DataTemplate>
+            </xcad:DockingManager.DocumentHeaderTemplate>
+
+            <xcad:DockingManager.DocumentTitleTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Path=Content.DataContext.Title}"/>
+                </DataTemplate>
+            </xcad:DockingManager.DocumentTitleTemplate>
+
+            <xcad:LayoutRoot>
+                <xcad:LayoutPanel Orientation="Vertical" DockWidth="*">
+
+                    <xcad:LayoutDocumentPaneGroup  >
+                        <xcad:LayoutDocumentPane x:Name="MainDocumentPane"  >
+
+                            <!-- Documents are added here dynamically at runtime. -->
+
+                        </xcad:LayoutDocumentPane>
+                    </xcad:LayoutDocumentPaneGroup >
+
+                </xcad:LayoutPanel>
+            </xcad:LayoutRoot>
+        </xcad:DockingManager>
+
+    </Grid>
+</Window>
