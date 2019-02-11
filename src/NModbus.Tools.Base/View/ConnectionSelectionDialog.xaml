@@ -3,11 +3,164 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:local="clr-namespace:NModbus.Tools.Base.View"
-             Title="Connection Selection"
+             xmlns:ViewModel="clr-namespace:NModbus.Tools.Base.ViewModel"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:behaviors="clr-namespace:NModbus.Tools.Base.Behaviors"
+        Title="Connection Selection"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+             ResizeMode="NoResize"
+        SizeToContent="Height"
+             d:DataContext="{d:DesignInstance ViewModel:ConnectionSelectionViewModel}"
+             Width="500" Icon="/NModbus.Tools.Base;component/Images/Link_16xMD.png" >
+
+    <i:Interaction.Behaviors>
+        <behaviors:CloseableBehavior/>
+    </i:Interaction.Behaviors>
+
+    <StackPanel Grid.IsSharedSizeScope="True">
+
+        <GroupBox Header="Connections">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="160"/>
+                </Grid.RowDefinitions>
+
+                <ToolBar>
+                    <Button Command="{Binding Path=AddConnectionCommand}">
+                        <Image Source="/NModbus.Tools.Base;component/Images/AddLink_16x.png"></Image>
+                    </Button>
+                    <Button Command="{Binding Path=DeleteConnectionCommand}">
+                        <Image Source="/NModbus.Tools.Base;component/Images/RemoveLink_16x.png"></Image>
+                    </Button>
+                </ToolBar>
+
+                <ListBox Grid.Row="1" Margin="1" ItemsSource="{Binding Path=Connections}" SelectedItem="{Binding Path=SelectedConnection}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="/NModbus.Tools.Base;component/Images/Link_16xMD.png"/>
+                                <TextBlock VerticalAlignment="Center" Text="{Binding Path=Name}" Margin="1"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+
             
-    </Grid>
+        </GroupBox>
+
+
+        <GroupBox Header="Details">
+        <Grid>
+            <Grid.Resources>
+                <Style x:Key="BaseStyle" TargetType="FrameworkElement">
+                    <Setter Property="Margin" Value="4"/>
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                </Style>
+
+                <Style TargetType="TextBlock" BasedOn="{StaticResource BaseStyle}"/>
+                <Style TargetType="TextBox"   BasedOn="{StaticResource BaseStyle}"/>
+                <Style TargetType="CheckBox"  BasedOn="{StaticResource BaseStyle}"/>
+                <Style TargetType="ComboBox"  BasedOn="{StaticResource BaseStyle}"/>
+                <Style TargetType="ListBox"  BasedOn="{StaticResource BaseStyle}"/>
+                <Style TargetType="xctk:IntegerUpDown" BasedOn="{StaticResource BaseStyle}"/>
+
+
+                <Style TargetType="TextBox" x:Key="ListTextBoxStyle" BasedOn="{StaticResource BaseStyle}">
+                    <Setter Property="AcceptsReturn" Value="True"/>
+                    <Setter Property="AcceptsTab" Value="True"/>
+                    <Setter Property="TextWrapping" Value="NoWrap"/>
+                    <Setter Property="VerticalAlignment" Value="Stretch"></Setter>
+                </Style>
+            </Grid.Resources>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Header"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0">Name</TextBlock>
+            <TextBox  Grid.Row="0" Grid.Column="1" Text="{Binding Path=SelectedConnection.Name, UpdateSourceTrigger=PropertyChanged}" x:Name="NameTextBox" />
+
+            <TextBlock Grid.Row="1" Grid.Column="0">Type</TextBlock>
+            <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Path=ConnectionTypes}" SelectedValue="{Binding Path=SelectedConnection.Type}" DisplayMemberPath="Key" SelectedValuePath="Value" />
+
+            <TextBlock Grid.Row="2" Grid.Column="0">Hostname</TextBlock>
+            <Grid Grid.Row="2" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="80"/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBox  Grid.Column="0" Text="{Binding Path=SelectedConnection.HostName, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock  Grid.Column="1">Port</TextBlock>
+                    <xctk:IntegerUpDown  Grid.Column="2" Value="{Binding Path=SelectedConnection.Port}"></xctk:IntegerUpDown>
+
+            </Grid>
+
+            <TextBlock Grid.Row="3" Grid.Column="0">Serial Port</TextBlock>
+            <ComboBox  Grid.Row="3" Grid.Column="1" Text="{Binding Path=SelectedConnection.SerialPortName}" ItemsSource="{Binding Path=SerialPortNames}" IsEditable="True"/>
+
+            <TextBlock Grid.Row="4" Grid.Column="0">Baud</TextBlock>
+            <Grid Grid.Row="4" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    
+                </Grid.ColumnDefinitions>
+                <xctk:IntegerUpDown Grid.Column="0" Value="{Binding Path=SelectedConnection.Baud}" Minimum="1" />
+
+                <ComboBox Grid.Column="1" ToolTip="Parity" SelectedValue="{Binding Path=SelectedConnection.Parity}" ItemsSource="{Binding Path=Parities}" SelectedValuePath="Value" DisplayMemberPath="Key"/>
+
+                <xctk:IntegerUpDown Grid.Column="2" Value="{Binding Path=SelectedConnection.DataBits}" ToolTip="Data bits"  Minimum="1" />
+
+                <ComboBox Grid.Column="3" ToolTip="Stop Bits" SelectedValue="{Binding Path=SelectedConnection.StopBits}" ItemsSource="{Binding Path=StopBitses}" SelectedValuePath="Value" DisplayMemberPath="Key"/>
+
+            </Grid>
+
+            <TextBlock Grid.Row="5" Grid.Column="0">Read Timeout</TextBlock>
+            <xctk:IntegerUpDown Grid.Row="5" Grid.Column="1" ToolTip="Read Timeout in milliseconds" Minimum="1" Value="{Binding Path=SelectedConnection.ReadTimeout}" />
+
+            <TextBlock Grid.Row="6" Grid.Column="0">Read Timeout</TextBlock>
+                <xctk:IntegerUpDown Grid.Row="6" Grid.Column="1" ToolTip="Write Timeout in milliseconds" Minimum="1" Value="{Binding Path=SelectedConnection.WriteTimeout}" />
+        </Grid>
+
+        </GroupBox>
+
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!--<xctk:BusyIndicator Grid.Column="1" VerticalAlignment="Center" Margin="2" Visibility="{Binding Path=Executor.IsBusy, Converter={StaticResource HiddenWhenFalseConverter}}"/>-->
+            <Button Grid.Column="2" MinWidth="100" Margin="4" IsDefault="True" Command="{Binding Path=OkCommand}">_OK</Button>
+            <Button Grid.Column="3" MinWidth="100" Margin="4" IsCancel="True">_Cancel</Button>
+        </Grid>
+    </StackPanel>
 </Window>

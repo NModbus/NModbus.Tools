@@ -6,6 +6,7 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight.Threading;
 using GalaSoft.MvvmLight.CommandWpf;
 using NModbus.Tools.Base;
+using NModbus.Tools.Base.Model;
 
 namespace NModbus.Tools.SlaveExplorer.ViewModel
 {
@@ -22,6 +23,10 @@ namespace NModbus.Tools.SlaveExplorer.ViewModel
         private double _pollingInterval = 2.0;
 
         private byte _slaveAddress;
+
+        private readonly ConnectionSelectionService _connectionSelectionService = new ConnectionSelectionService();
+
+        private ConnectionFactory _connectionFactory;
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
@@ -43,11 +48,18 @@ namespace NModbus.Tools.SlaveExplorer.ViewModel
             _pollingTimer.Elapsed += PollingTimerEllapsed;
 
             StopPollingCommand = new RelayCommand(StopPolling, CanStopPolling);
+            SelectConnectionCommand = new RelayCommand(SelectConnection);
         }
 
         public string Title => "Slave Explorer";
 
         public ICommand StopPollingCommand { get; }
+        public ICommand SelectConnectionCommand { get; }
+
+        private void SelectConnection()
+        {
+            GetModbusMasterFactoryCore(true);
+        }
 
         private void StopPolling()
         {
@@ -97,6 +109,16 @@ namespace NModbus.Tools.SlaveExplorer.ViewModel
             set
             {
                 _slaveAddress = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public ConnectionFactory ConnectionFactory
+        {
+            get { return _connectionFactory; }
+            set
+            {
+                _connectionFactory = value;
                 RaisePropertyChanged();
             }
         }
@@ -165,7 +187,22 @@ namespace NModbus.Tools.SlaveExplorer.ViewModel
 
         public IModbusMasterFactory GetModbusMasterFactory()
         {
-            throw new NotImplementedException();
+            return GetModbusMasterFactoryCore(false);
+        }
+
+        private IModbusMasterFactory GetModbusMasterFactoryCore(bool force)
+        {
+            if (ConnectionFactory == null || force)
+            {
+                var connection = _connectionSelectionService.GetConnection();
+
+                if (connection == null)
+                    return null;
+
+                ConnectionFactory = new ConnectionFactory(connection);
+            }
+
+            return ConnectionFactory;
         }
 
         public bool IsPolling
@@ -181,7 +218,7 @@ namespace NModbus.Tools.SlaveExplorer.ViewModel
 
         public InputRegistersViewModel InputRegisters { get; }
 
-        public IMessageBoxService MessageBoxService => throw new NotImplementedException();
+        public IMessageBoxService MessageBoxService { get; } = new MessageBoxService();
     }
 
 

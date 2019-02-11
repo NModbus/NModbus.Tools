@@ -269,7 +269,11 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Style="{StaticResource LabelStyle}" VerticalAlignment="Center">Adapter:</TextBlock>
+                <TextBlock Style="{StaticResource LabelStyle}" VerticalAlignment="Center">Connection:</TextBlock>
+
+                <Button Grid.Column="1" Margin="4" MinWidth="70" Command="{Binding Path=SelectConnectionCommand}">Choose</Button>
+
+                <TextBlock Grid.Column="2" VerticalAlignment="Center" Text="{Binding Path=ConnectionFactory}" Margin="4"></TextBlock>
 
                 <!--<view:ModbusAdapterSelector Grid.Column="1" DataContext="{Binding Path=ModbusAdapters}" VerticalAlignment="Center" />-->
 

@@ -44,6 +44,16 @@ namespace NModbus.Tools.Base.ViewModel
             }
         }
 
+        public int Port
+        {
+            get { return _model.Port; }
+            set
+            {
+                _model.Port = value;
+                RaisePropertyChanged();
+            }
+        }
+
         public string SerialPortName
         {
             get { return _model.SerialPortName; }

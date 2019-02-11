@@ -5,19 +5,25 @@ using System.Net.Sockets;
 
 namespace NModbus.Tools.Base.Model
 {
-    public class ConnectionFactory
+    public class ConnectionFactory : IModbusMasterFactory
     {
         private const int TcpConnectionTimeoutMilliseconds = 10 * 1000;
+        private readonly Connection _connection;
 
-        public IModbusMaster CreateAsync(Connection connection)
+        public ConnectionFactory(Connection connection)
+        {
+            _connection = connection;
+        }
+
+        public IModbusMaster Create()
         {
             var factory = new ModbusFactory();
 
-            switch (connection.Type)
+            switch (_connection.Type)
             {
                 case ConnectionType.Rtu:
                     {
-                        var serialPort = CreateAndOpenSerialPort(connection);
+                        var serialPort = CreateAndOpenSerialPort(_connection);
 
                         var transport = new SerialPortAdapter(serialPort);
 
@@ -25,7 +31,7 @@ namespace NModbus.Tools.Base.Model
                     }
                 case ConnectionType.Ascii:
                     {
-                        var serialPort = CreateAndOpenSerialPort(connection);
+                        var serialPort = CreateAndOpenSerialPort(_connection);
 
                         var transport = new SerialPortAdapter(serialPort);
 
@@ -35,9 +41,9 @@ namespace NModbus.Tools.Base.Model
                     {
                         var tcpClient = new TcpClient();
 
-                        if (!tcpClient.ConnectAsync(connection.HostName, connection.Port).Wait(TcpConnectionTimeoutMilliseconds))
+                        if (!tcpClient.ConnectAsync(_connection.HostName, _connection.Port).Wait(TcpConnectionTimeoutMilliseconds))
                         {
-                            throw new TimeoutException($"Timed out trying to connect to TCP Modbus device at {connection.HostName}:{connection.Port}");
+                            throw new TimeoutException($"Timed out trying to connect to TCP Modbus device at {_connection.HostName}:{_connection.Port}");
                         }
 
                         return factory.CreateMaster(tcpClient);
@@ -49,7 +55,7 @@ namespace NModbus.Tools.Base.Model
                         return factory.CreateMaster(udpClient);
                     }
                 default:
-                    throw new ArgumentException($"{nameof(connection.Type)} had an unepected value '{connection.Type}'.");
+                    throw new ArgumentException($"{nameof(_connection.Type)} had an unepected value '{_connection.Type}'.");
             }
         }
 
@@ -69,6 +75,27 @@ namespace NModbus.Tools.Base.Model
             serialPort.Open();
 
             return serialPort;
+        }
+
+        public override string ToString()
+        {
+            switch (_connection.Type)
+            {
+                case ConnectionType.Tcp:
+                    return $"TCP {_connection.HostName}:{_connection.Port}";
+
+                case ConnectionType.Udp:
+                    return $"UDP {_connection.HostName}:{_connection.Port}";
+
+                case ConnectionType.Rtu:
+                    return $"RTU {_connection.SerialPortName} ({_connection.Baud})";
+
+                case ConnectionType.Ascii:
+                    return $"ASCII {_connection.SerialPortName} ({_connection.Baud})";
+
+                default:
+                    return "Unknown Type";
+            }
         }
     }
 }

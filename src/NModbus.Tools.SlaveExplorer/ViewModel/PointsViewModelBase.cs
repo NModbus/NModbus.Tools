@@ -44,13 +44,16 @@ namespace NModbus.Tools.SlaveExplorer.ViewModel
         {
             var factory = _context.GetModbusMasterFactory();
 
-            using (IModbusMaster master = factory.Create())
+            if (factory != null)
             {
-                TPointValue[] values = ReadCore(master, _context.SlaveAddress, StartAddress, NumberOfPoints);
-
-                for (int index = 0; index < values.Length; index++)
+                using (IModbusMaster master = factory.Create())
                 {
-                    Points[index].SetValue(values[index]);
+                    TPointValue[] values = ReadCore(master, _context.SlaveAddress, StartAddress, NumberOfPoints);
+
+                    for (int index = 0; index < values.Length; index++)
+                    {
+                        Points[index].SetValue(values[index]);
+                    }
                 }
             }
         }
