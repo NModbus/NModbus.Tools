@@ -63,6 +63,14 @@ namespace NModbus.Tools.Base
                     connections.Connections = new Connection[] { };
                 }
 
+                foreach(var connection in connections.Connections)
+                {
+                    if (connection.ConnectionTimeout <= 0)
+                    {
+                        connection.ConnectionTimeout = 5000;
+                    }
+                }
+
                 return connections;
             }
             catch(Exception)

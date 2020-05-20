@@ -5,8 +5,9 @@
         xmlns:viewModel="clr-namespace:NModbus.Tools.SlaveExplorer.ViewModel"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        mc:Ignorable="d" 
-        d:DataContext="{d:DesignInstance Type=viewModel:SlaveExplorerViewModel}"
+             xmlns:converters="clr-namespace:NModbus.Tools.Base.Converters;assembly=NModbus.Tools.Base"
+             mc:Ignorable="d" 
+        d:DataContext="{d:DesignInstance Type=viewModel:SlaveExplorerViewModel, IsDesignTimeCreatable=True}"
         Background="#F4F4F4"
         d:DesignHeight="400" d:DesignWidth="700">
 
@@ -23,6 +24,8 @@
                 <!--<ResourceDictionary  Source="pack://application:,,,/ModbusTools.Common;component/CommonResources.xaml" />-->
 
                 <ResourceDictionary>
+
+                    <converters:CollapsedWhenFalseConverter x:Key="CollapsedWhenFalseConverter"/>
 
                     <SolidColorBrush x:Key="WindowBackground" Color="#EAEAEA"  />
 
@@ -72,6 +75,12 @@
                         <Setter Property="Content" Value="Write"/>
                         <Setter Property="Command" Value="{Binding Path=WriteCommand}"/>
                         <Setter Property="IsEnabled" Value="{Binding Path=IsWriteable}"></Setter>
+                        <Setter Property="Visibility" Value="{Binding Path=IsWriteable, Converter={StaticResource CollapsedWhenFalseConverter}}"></Setter>
+                    </Style>
+
+                    <Style x:Key="ClearButtonStyle" TargetType="Button" BasedOn="{StaticResource ButtonBase}">
+                        <Setter Property="Content" Value="Clear"/>
+                        <Setter Property="Command" Value="{Binding Path=ClearCommand}"/>
                     </Style>
 
                     <DataTemplate x:Key="IsDirtyCellTemplate">
@@ -120,15 +129,16 @@
                             </Grid.ColumnDefinitions>
 
                             <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelStyle}">Starting Address</TextBlock>
-                            <xctk:IntegerUpDown  Grid.Row="0" Grid.Column="1" Minimum="0" Maximum="65536"   MinWidth="60" Value="{Binding Path=StartAddress}" />
+                            <xctk:IntegerUpDown  Grid.Row="0" Grid.Column="1" Minimum="0" Maximum="65536"   MinWidth="60" Value="{Binding Path=StartAddress}" ToolTip="The starting address at which to start reading / writing points." />
 
                             <TextBlock  Grid.Row="1" Grid.Column="0" Style="{StaticResource LabelStyle}" >Number</TextBlock>
-                            <xctk:IntegerUpDown  Grid.Row="1" Grid.Column="1" Minimum="1" Maximum="4000" MinWidth="60" Value="{Binding Path=NumberOfPoints}" />
+                            <xctk:IntegerUpDown  Grid.Row="1" Grid.Column="1" Minimum="1" Maximum="4000" MinWidth="60" Value="{Binding Path=NumberOfPoints}" ToolTip="The number of points to read / write." />
 
-                            <Button Grid.Row="0" Grid.Column="2" Style="{StaticResource ReadButtonStyle}"/>
-                            <Button Grid.Row="1" Grid.Column="2"  Style="{StaticResource WriteButtonStyle}"/>
-
-                            <Button Grid.Row="0" Grid.Column="4" Style="{StaticResource ButtonBase}" Command="{Binding Path=PollCommand}">Poll</Button>
+                            <Button Grid.Row="0" Grid.Column="2" Style="{StaticResource ReadButtonStyle}" ToolTip="Read the values from the device." />
+                            <Button Grid.Row="0" Grid.Column="4" Style="{StaticResource ButtonBase}" Command="{Binding Path=PollCommand}" ToolTip="Starts polling these points.">Poll</Button>
+                            
+                            <Button Grid.Row="1" Grid.Column="2"  Style="{StaticResource WriteButtonStyle}" ToolTip="Write the values to the device." />
+                            <Button Grid.Row="1" Grid.Column="4" Style="{StaticResource ClearButtonStyle}" ToolTip="Reset the values in the results display." />
 
                         </Grid>
                     </ControlTemplate>
@@ -271,7 +281,7 @@
 
                 <TextBlock Style="{StaticResource LabelStyle}" VerticalAlignment="Center">Connection:</TextBlock>
 
-                <Button Grid.Column="1" Margin="4" MinWidth="70" Command="{Binding Path=SelectConnectionCommand}">Choose</Button>
+                <Button Grid.Column="1" Margin="4" MinWidth="70" Command="{Binding Path=SelectConnectionCommand}" ToolTip="Choose a connection to use.">Choose</Button>
 
                 <TextBlock Grid.Column="2" VerticalAlignment="Center" Text="{Binding Path=ConnectionFactory}" Margin="4"></TextBlock>
 

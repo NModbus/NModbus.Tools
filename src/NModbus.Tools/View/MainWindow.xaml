@@ -24,7 +24,7 @@
                 <MenuItem Header="E_xit" x:Name="ExitMenuItem" Click="ExitMenuItem_OnClick"/>
             </MenuItem>
             <MenuItem Header="_Help">
-                <MenuItem Header="_About"/>
+                <MenuItem Header="_About" x:Name="AboutMenuItem" Click="AboutMenuItem_Click" />
             </MenuItem>
         </Menu>
 

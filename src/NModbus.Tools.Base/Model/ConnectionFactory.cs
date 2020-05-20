@@ -7,7 +7,7 @@ namespace NModbus.Tools.Base.Model
 {
     public class ConnectionFactory : IModbusMasterFactory
     {
-        private const int TcpConnectionTimeoutMilliseconds = 10 * 1000;
+        private const int DefaultTcpConnectionTimeoutMilliseconds = 5 * 1000;
         private readonly Connection _connection;
 
         public ConnectionFactory(Connection connection)
@@ -39,10 +39,23 @@ namespace NModbus.Tools.Base.Model
                     }
                 case ConnectionType.Tcp:
                     {
-                        var tcpClient = new TcpClient();
-
-                        if (!tcpClient.ConnectAsync(_connection.HostName, _connection.Port).Wait(TcpConnectionTimeoutMilliseconds))
+                        var tcpClient = new TcpClient
                         {
+                            ReceiveTimeout = _connection.ReadTimeout,
+                            SendTimeout = _connection.WriteTimeout
+                        };
+
+                        var effectiveConnectionTimeout = _connection.ConnectionTimeout;
+
+                        if (effectiveConnectionTimeout <= 0)
+                        {
+                            effectiveConnectionTimeout = DefaultTcpConnectionTimeoutMilliseconds;
+                        }
+
+                        if (!tcpClient.ConnectAsync(_connection.HostName, _connection.Port).Wait(effectiveConnectionTimeout))
+                        {
+                            tcpClient.Dispose();
+
                             throw new TimeoutException($"Timed out trying to connect to TCP Modbus device at {_connection.HostName}:{_connection.Port}");
                         }
 
@@ -82,16 +95,16 @@ namespace NModbus.Tools.Base.Model
             switch (_connection.Type)
             {
                 case ConnectionType.Tcp:
-                    return $"TCP {_connection.HostName}:{_connection.Port}";
+                    return $"{_connection.Name} [TCP {_connection.HostName}:{_connection.Port}]";
 
                 case ConnectionType.Udp:
-                    return $"UDP {_connection.HostName}:{_connection.Port}";
+                    return $"{_connection.Name} [UDP {_connection.HostName}:{_connection.Port}]";
 
                 case ConnectionType.Rtu:
-                    return $"RTU {_connection.SerialPortName} ({_connection.Baud})";
+                    return $"{_connection.Name} [RTU {_connection.SerialPortName} ({_connection.Baud})]";
 
                 case ConnectionType.Ascii:
-                    return $"ASCII {_connection.SerialPortName} ({_connection.Baud})";
+                    return $"{_connection.Name} [ASCII {_connection.SerialPortName} ({_connection.Baud})]";
 
                 default:
                     return "Unknown Type";

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO.Ports;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 
 namespace NModbus.Tools.Base.ViewModel
@@ -17,6 +18,12 @@ namespace NModbus.Tools.Base.ViewModel
         private ConnectionViewModel _selectedConnection;
 
         public event EventHandler<CloseEventArgs> Close;
+
+        private readonly IMessageBoxService _messageBoxService = new MessageBoxService();
+
+        public ConnectionSelectionViewModel() : this(new SavedConnections { Connections = new Connection[] { new Connection { Name = "Design Time" } } })
+        {
+        }
 
         public ConnectionSelectionViewModel(SavedConnections model)
         {
@@ -98,7 +105,8 @@ namespace NModbus.Tools.Base.ViewModel
                 ReadTimeout = 2000,
                 WriteTimeout = 2000,
                 Port = 502,
-                Type = ConnectionType.Tcp
+                Type = ConnectionType.Tcp,
+                ConnectionTimeout = 5000
             };
 
             var viewModel = new ConnectionViewModel(connection);
@@ -110,25 +118,43 @@ namespace NModbus.Tools.Base.ViewModel
 
         private void DeleteConnection()
         {
-            var selectedConnection = SelectedConnection;
+            try
+            {
 
-            if (selectedConnection == null)
-                return;
+                var selectedConnection = SelectedConnection;
 
-            Connections.Remove(selectedConnection);
+                if (selectedConnection == null)
+                    return;
 
-            SelectedConnection = Connections.FirstOrDefault();
+                if (MessageBox.Show($"Delete connection '{selectedConnection.Name}'?", "Delete Connection", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                {
+                    Connections.Remove(selectedConnection);
+
+                    SelectedConnection = Connections.FirstOrDefault();
+                }
+            }
+            catch(Exception ex)
+            {
+                _messageBoxService.Display(ex, "Delete Connection");
+            }
         }
 
         private void RefreshPortNames()
         {
-            var portNames = SerialPort.GetPortNames();
-
-            SerialPortNames.Clear();
-
-            foreach (var portName in portNames)
+            try
             {
-                SerialPortNames.Add(portName);
+                var portNames = SerialPort.GetPortNames();
+
+                SerialPortNames.Clear();
+
+                foreach (var portName in portNames)
+                {
+                    SerialPortNames.Add(portName);
+                }
+            }
+            catch (Exception ex)
+            {
+                _messageBoxService.Display(ex, "Refresh Port Names");
             }
         }
 

@@ -45,5 +45,10 @@ namespace NModbus.Tools.View
         {
             Add<SlaveExplorerViewModel, SlaveExplorerView>();
         }
+
+        private void AboutMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(this, "NModbus Tools", "About");
+        }
     }
 }

@@ -4,7 +4,7 @@ namespace NModbus.Tools.Base
 {
     public static class MessageBoxServiceExtensions
     {
-        public static void Show(this IMessageBoxService messageBoxService, Exception ex, string title)
+        public static void Display(this IMessageBoxService messageBoxService, Exception ex, string title = "Error")
         {
             messageBoxService.Show(ex.ToString(), title);
         }

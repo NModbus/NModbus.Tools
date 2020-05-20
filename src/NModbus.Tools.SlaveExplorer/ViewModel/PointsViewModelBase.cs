@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Windows;
 using System.Windows.Input;
 
 namespace NModbus.Tools.SlaveExplorer.ViewModel
@@ -30,6 +29,7 @@ namespace NModbus.Tools.SlaveExplorer.ViewModel
             ReadCommand = new RelayCommand(Read, CanRead);
             WriteCommand = new RelayCommand(Write, CanWrite);
             PollCommand = new RelayCommand(Poll, CanPoll);
+            ClearCommand = new RelayCommand(Clear);
 
             NumberOfPoints = 10;
         }
@@ -39,6 +39,16 @@ namespace NModbus.Tools.SlaveExplorer.ViewModel
         public ICommand WriteCommand { get; }
 
         public ICommand PollCommand { get; }
+
+        public ICommand ClearCommand { get; }
+
+        private void Clear()
+        {
+            foreach(var point in Points)
+            {
+                point.SetValue(default);
+            }
+        }
 
         private void ReadCore()
         {
@@ -71,7 +81,7 @@ namespace NModbus.Tools.SlaveExplorer.ViewModel
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString(), "Read Failed");
+                _context.MessageBoxService.Display(ex, "Read Failed");
             }
         }
 
@@ -107,7 +117,7 @@ namespace NModbus.Tools.SlaveExplorer.ViewModel
             }
             catch (Exception ex)
             {
-                _context.MessageBoxService.Show(ex, "Write Failed");
+                _context.MessageBoxService.Display(ex, "Write Failed");
             }
         }
 

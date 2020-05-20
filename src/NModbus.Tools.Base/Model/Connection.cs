@@ -49,5 +49,10 @@ namespace NModbus.Tools.Base.Model
         /// The write timeout in milliseconds.
         /// </summary>
         public int WriteTimeout { get; set; }
+
+        /// <summary>
+        /// The connection timeout in milliseconds. APplies to TCP connections.
+        /// </summary>
+        public int ConnectionTimeout { get; set; }
     }
 }

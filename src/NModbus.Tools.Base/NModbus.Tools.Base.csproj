@@ -86,6 +86,11 @@
     <Compile Include="Behaviors\CloseableBehavior.cs" />
     <Compile Include="Behaviors\ICloseableViewModel.cs" />
     <Compile Include="ConnectionSelectionService.cs" />
+    <Compile Include="Converters\CollapsedWhenFalseConverter.cs" />
+    <Compile Include="Converters\CollapsedWhenTrueConverter.cs" />
+    <Compile Include="Converters\HiddenWhenFalseConverter.cs" />
+    <Compile Include="Converters\HiddenWhenTrueConverter.cs" />
+    <Compile Include="Converters\InvertBooleanConverter.cs" />
     <Compile Include="CrcExtensions.cs" />
     <Compile Include="FunctionCodeNameFactory.cs" />
     <Compile Include="FunctionCode.cs" />

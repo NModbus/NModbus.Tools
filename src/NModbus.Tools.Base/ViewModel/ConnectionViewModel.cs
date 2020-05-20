@@ -14,6 +14,12 @@ namespace NModbus.Tools.Base.ViewModel
             _model = model ?? throw new ArgumentNullException(nameof(model));
         }
 
+        public bool IsTcp => IsInDesignMode || Type == ConnectionType.Tcp;
+
+        public bool IsNetwork => IsInDesignMode || Type == ConnectionType.Tcp || Type == ConnectionType.Udp;
+
+        public bool IsSerial => IsInDesignMode || Type == ConnectionType.Rtu || Type == ConnectionType.Ascii;
+
         public string Name
         {
             get {  return _model.Name; }
@@ -31,6 +37,9 @@ namespace NModbus.Tools.Base.ViewModel
             {
                 _model.Type = value;
                 RaisePropertyChanged();
+                RaisePropertyChanged(() => IsNetwork);
+                RaisePropertyChanged(() => IsSerial);
+                RaisePropertyChanged(() => IsTcp);
             }
         }
 
@@ -120,6 +129,16 @@ namespace NModbus.Tools.Base.ViewModel
             set
             {
                 _model.WriteTimeout = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public int ConnectionTimeout
+        {
+            get { return _model.ConnectionTimeout; }
+            set
+            {
+                _model.ConnectionTimeout = value;
                 RaisePropertyChanged();
             }
         }

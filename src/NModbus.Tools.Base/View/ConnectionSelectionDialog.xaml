@@ -8,12 +8,17 @@
              xmlns:ViewModel="clr-namespace:NModbus.Tools.Base.ViewModel"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:behaviors="clr-namespace:NModbus.Tools.Base.Behaviors"
+        xmlns:converters="clr-namespace:NModbus.Tools.Base.Converters"
         Title="Connection Selection"
              mc:Ignorable="d" 
              ResizeMode="NoResize"
         SizeToContent="Height"
-             d:DataContext="{d:DesignInstance ViewModel:ConnectionSelectionViewModel}"
+             d:DataContext="{d:DesignInstance ViewModel:ConnectionSelectionViewModel, IsDesignTimeCreatable=True}"
              Width="500" Icon="/NModbus.Tools.Base;component/Images/Link_16xMD.png" >
+
+    <Window.Resources>
+        <converters:CollapsedWhenFalseConverter x:Key="CollapsedWhenFalseConverter" />
+    </Window.Resources>
 
     <i:Interaction.Behaviors>
         <behaviors:CloseableBehavior/>
@@ -54,98 +59,150 @@
         </GroupBox>
 
 
-        <GroupBox Header="Details">
-        <Grid>
-            <Grid.Resources>
-                <Style x:Key="BaseStyle" TargetType="FrameworkElement">
-                    <Setter Property="Margin" Value="4"/>
-                    <Setter Property="VerticalAlignment" Value="Center"/>
-                </Style>
+        <GroupBox Header="Details" Grid.IsSharedSizeScope="True" >
+            <StackPanel>
+                <StackPanel.Resources>
+                    <Style x:Key="BaseStyle" TargetType="FrameworkElement">
+                        <Setter Property="Margin" Value="4"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                    </Style>
 
-                <Style TargetType="TextBlock" BasedOn="{StaticResource BaseStyle}"/>
-                <Style TargetType="TextBox"   BasedOn="{StaticResource BaseStyle}"/>
-                <Style TargetType="CheckBox"  BasedOn="{StaticResource BaseStyle}"/>
-                <Style TargetType="ComboBox"  BasedOn="{StaticResource BaseStyle}"/>
-                <Style TargetType="ListBox"  BasedOn="{StaticResource BaseStyle}"/>
-                <Style TargetType="xctk:IntegerUpDown" BasedOn="{StaticResource BaseStyle}"/>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource BaseStyle}"/>
+                    <Style TargetType="TextBox"   BasedOn="{StaticResource BaseStyle}"/>
+                    <Style TargetType="CheckBox"  BasedOn="{StaticResource BaseStyle}"/>
+                    <Style TargetType="ComboBox"  BasedOn="{StaticResource BaseStyle}"/>
+                    <Style TargetType="ListBox"  BasedOn="{StaticResource BaseStyle}"/>
+                    <Style TargetType="xctk:IntegerUpDown" BasedOn="{StaticResource BaseStyle}"/>
 
 
-                <Style TargetType="TextBox" x:Key="ListTextBoxStyle" BasedOn="{StaticResource BaseStyle}">
-                    <Setter Property="AcceptsReturn" Value="True"/>
-                    <Setter Property="AcceptsTab" Value="True"/>
-                    <Setter Property="TextWrapping" Value="NoWrap"/>
-                    <Setter Property="VerticalAlignment" Value="Stretch"></Setter>
-                </Style>
-            </Grid.Resources>
+                    <Style TargetType="TextBox" x:Key="ListTextBoxStyle" BasedOn="{StaticResource BaseStyle}">
+                        <Setter Property="AcceptsReturn" Value="True"/>
+                        <Setter Property="AcceptsTab" Value="True"/>
+                        <Setter Property="TextWrapping" Value="NoWrap"/>
+                        <Setter Property="VerticalAlignment" Value="Stretch"></Setter>
+                    </Style>
+                </StackPanel.Resources>
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" SharedSizeGroup="Header"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Header"/>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="0" Grid.Column="0">Name</TextBlock>
-            <TextBox  Grid.Row="0" Grid.Column="1" Text="{Binding Path=SelectedConnection.Name, UpdateSourceTrigger=PropertyChanged}" x:Name="NameTextBox" />
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="1" Grid.Column="0">Type</TextBlock>
-            <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Path=ConnectionTypes}" SelectedValue="{Binding Path=SelectedConnection.Type}" DisplayMemberPath="Key" SelectedValuePath="Value" />
+                    <TextBlock Grid.Row="0" Grid.Column="0">Name</TextBlock>
+                    <TextBox  Grid.Row="0" Grid.Column="1" Text="{Binding Path=SelectedConnection.Name, UpdateSourceTrigger=PropertyChanged}" x:Name="NameTextBox" />
 
-            <TextBlock Grid.Row="2" Grid.Column="0">Hostname</TextBlock>
-            <Grid Grid.Row="2" Grid.Column="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="80"/>
-                </Grid.ColumnDefinitions>
-                
-                <TextBox  Grid.Column="0" Text="{Binding Path=SelectedConnection.HostName, UpdateSourceTrigger=PropertyChanged}" />
-                <TextBlock  Grid.Column="1">Port</TextBlock>
-                    <xctk:IntegerUpDown  Grid.Column="2" Value="{Binding Path=SelectedConnection.Port}"></xctk:IntegerUpDown>
+                    <TextBlock Grid.Row="1" Grid.Column="0">Type</TextBlock>
+                    <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Path=ConnectionTypes}" SelectedValue="{Binding Path=SelectedConnection.Type}" DisplayMemberPath="Key" SelectedValuePath="Value" />
 
-            </Grid>
+                </Grid>
 
-            <TextBlock Grid.Row="3" Grid.Column="0">Serial Port</TextBlock>
-            <ComboBox  Grid.Row="3" Grid.Column="1" Text="{Binding Path=SelectedConnection.SerialPortName}" ItemsSource="{Binding Path=SerialPortNames}" IsEditable="True"/>
+                <Grid Visibility="{Binding Path=SelectedConnection.IsNetwork, Converter={StaticResource CollapsedWhenFalseConverter}}">
 
-            <TextBlock Grid.Row="4" Grid.Column="0">Baud</TextBlock>
-            <Grid Grid.Row="4" Grid.Column="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    
-                </Grid.ColumnDefinitions>
-                <xctk:IntegerUpDown Grid.Column="0" Value="{Binding Path=SelectedConnection.Baud}" Minimum="1" />
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Header"/>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
 
-                <ComboBox Grid.Column="1" ToolTip="Parity" SelectedValue="{Binding Path=SelectedConnection.Parity}" ItemsSource="{Binding Path=Parities}" SelectedValuePath="Value" DisplayMemberPath="Key"/>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                <xctk:IntegerUpDown Grid.Column="2" Value="{Binding Path=SelectedConnection.DataBits}" ToolTip="Data bits"  Minimum="1" />
+                    <TextBlock Grid.Row="0" Grid.Column="0">Hostname</TextBlock>
+                    <Grid Grid.Row="0" Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="80"/>
+                        </Grid.ColumnDefinitions>
 
-                <ComboBox Grid.Column="3" ToolTip="Stop Bits" SelectedValue="{Binding Path=SelectedConnection.StopBits}" ItemsSource="{Binding Path=StopBitses}" SelectedValuePath="Value" DisplayMemberPath="Key"/>
+                        <TextBox  Grid.Column="0" Text="{Binding Path=SelectedConnection.HostName, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock  Grid.Column="1">Port</TextBlock>
+                        <xctk:IntegerUpDown  Grid.Column="2" Value="{Binding Path=SelectedConnection.Port}"></xctk:IntegerUpDown>
 
-            </Grid>
+                    </Grid>
 
-            <TextBlock Grid.Row="5" Grid.Column="0">Read Timeout</TextBlock>
-            <xctk:IntegerUpDown Grid.Row="5" Grid.Column="1" ToolTip="Read Timeout in milliseconds" Minimum="1" Value="{Binding Path=SelectedConnection.ReadTimeout}" />
+                </Grid>
 
-            <TextBlock Grid.Row="6" Grid.Column="0">Read Timeout</TextBlock>
-                <xctk:IntegerUpDown Grid.Row="6" Grid.Column="1" ToolTip="Write Timeout in milliseconds" Minimum="1" Value="{Binding Path=SelectedConnection.WriteTimeout}" />
-        </Grid>
+                <Grid Visibility="{Binding Path=SelectedConnection.IsTcp, Converter={StaticResource CollapsedWhenFalseConverter}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Header"/>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+
+                    <TextBlock Grid.Row="0" Grid.Column="0">Connection Timeout</TextBlock>
+                    <xctk:IntegerUpDown Grid.Row="0" Grid.Column="1" ToolTip="Read Timeout in milliseconds" Minimum="1" Value="{Binding Path=SelectedConnection.ConnectionTimeout}" />
+
+                </Grid>
+
+                <Grid Visibility="{Binding Path=SelectedConnection.IsSerial, Converter={StaticResource CollapsedWhenFalseConverter}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Header"/>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+
+                    <TextBlock Grid.Row="0" Grid.Column="0">Serial Port</TextBlock>
+                    <ComboBox  Grid.Row="0" Grid.Column="1" Text="{Binding Path=SelectedConnection.SerialPortName}" ItemsSource="{Binding Path=SerialPortNames}" IsEditable="True"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0">Baud</TextBlock>
+                    <Grid Grid.Row="1" Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+
+                        </Grid.ColumnDefinitions>
+                        <xctk:IntegerUpDown Grid.Column="0" Value="{Binding Path=SelectedConnection.Baud}" Minimum="1" />
+
+                        <ComboBox Grid.Column="1" ToolTip="Parity" SelectedValue="{Binding Path=SelectedConnection.Parity}" ItemsSource="{Binding Path=Parities}" SelectedValuePath="Value" DisplayMemberPath="Key"/>
+
+                        <xctk:IntegerUpDown Grid.Column="2" Value="{Binding Path=SelectedConnection.DataBits}" ToolTip="Data bits"  Minimum="1" />
+
+                        <ComboBox Grid.Column="3" ToolTip="Stop Bits" SelectedValue="{Binding Path=SelectedConnection.StopBits}" ItemsSource="{Binding Path=StopBitses}" SelectedValuePath="Value" DisplayMemberPath="Key"/>
+
+                    </Grid>
+                </Grid>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Header"/>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+
+                    <TextBlock Grid.Row="0" Grid.Column="0">Read Timeout</TextBlock>
+                    <xctk:IntegerUpDown Grid.Row="0" Grid.Column="1" ToolTip="Read Timeout in milliseconds" Minimum="1" Value="{Binding Path=SelectedConnection.ReadTimeout}" />
+
+                    <TextBlock Grid.Row="1" Grid.Column="0">Read Timeout</TextBlock>
+                    <xctk:IntegerUpDown Grid.Row="1" Grid.Column="1" ToolTip="Write Timeout in milliseconds" Minimum="1" Value="{Binding Path=SelectedConnection.WriteTimeout}" />
+
+                </Grid>
+
+            </StackPanel>
 
         </GroupBox>
 
