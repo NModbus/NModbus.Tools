@@ -7,6 +7,7 @@ using GalaSoft.MvvmLight.Threading;
 using GalaSoft.MvvmLight.CommandWpf;
 using NModbus.Tools.Base;
 using NModbus.Tools.Base.Model;
+using System.Windows;
 
 namespace NModbus.Tools.SlaveExplorer.ViewModel
 {
@@ -51,14 +52,32 @@ namespace NModbus.Tools.SlaveExplorer.ViewModel
             SelectConnectionCommand = new RelayCommand(SelectConnection);
         }
 
-        public string Title => "Slave Explorer";
+        public string Title
+        {
+            get 
+            {
+                if (ConnectionFactory == null)    
+                    return "Slave Explorer";
+
+                return $"Slave Explorer - {ConnectionFactory.Name}";
+            }
+        }
 
         public ICommand StopPollingCommand { get; }
         public ICommand SelectConnectionCommand { get; }
 
         private void SelectConnection()
         {
-            GetModbusMasterFactoryCore(true);
+            try
+            {
+                GetModbusMasterFactoryCore(true);
+
+                RaisePropertyChanged(() => Title);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Select Connection");
+            }
         }
 
         private void StopPolling()

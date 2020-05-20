@@ -15,6 +15,8 @@ namespace NModbus.Tools.Base.Model
             _connection = connection;
         }
 
+        public string Name => _connection.Name;
+
         public IModbusMaster Create()
         {
             var factory = new ModbusFactory();
