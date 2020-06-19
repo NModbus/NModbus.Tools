@@ -66,6 +66,11 @@ namespace NModbus.Tools.Base.Model
                 case ConnectionType.Udp:
                     {
                         var udpClient = new UdpClient();
+
+                        udpClient.Client.ReceiveTimeout = _connection.ReadTimeout;
+                        udpClient.Client.SendTimeout = _connection.WriteTimeout;
+
+                        udpClient.Connect(_connection.HostName, _connection.Port);
                         
                         return factory.CreateMaster(udpClient);
                     }
